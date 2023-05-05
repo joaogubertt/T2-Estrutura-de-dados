@@ -1,7 +1,11 @@
 #include <iostream>
 #include <string>
 #include <windows.h>
+#include <cstdlib>
 using namespace std;
+
+//REMOVER DA ÃRVORE
+//REMOVER TODOS OS ITENS APÃ“S O PROGRAMA RODAR (LIMPAR MEMÃ“RIA);
 
 struct Info {
     long long int CPF;
@@ -19,7 +23,7 @@ No* arvoreCPF = NULL;
 No* arvoreNome = NULL;
 
 void PedirInfo(Info*& info);
-void gerarInfo(No*& raiz, Info* info); // Função que gera a info, ocupando o mesmo espaço na memória para ambas as árvores..
+void gerarInfo(No*& raiz, Info* info); // FunÃ§Ã£o que gera a info, ocupando o mesmo espaÃ§o na memÃ³ria para ambas as Ã¡rvores..
 void inserirCPF(No*& raiz, Info* info);
 void inserirNome(No*& raiz, Info* info);
 void inserirEmAmbas(No*& raiz1, No*& raiz2, Info* Info);
@@ -28,64 +32,85 @@ Info* buscarNome(No* raiz, string Nome);
 Info* buscarCPF(No* raiz, long int CPF);
 
 int main() {
-    Info* info1 = new Info;
-    Info* info2 = new Info;
-    Info* info3 = new Info;
-    
-    
-    info1->CPF = 991;
-    info1->Nome = "Igor";
-    info1->Profissao = "Programador";
-    inserirEmAmbas(arvoreCPF, arvoreNome, info1);
-    
-    
-    info2->CPF = 744;
-    info2->Nome = "Joao";
-    info2->Profissao = "Programador";
-    inserirEmAmbas(arvoreCPF, arvoreNome, info2);
-    //delete(info1);
 
-    info3->CPF = 999;
-    info3->Nome = "Artur";
-    info3->Profissao = "Programador";
-    inserirEmAmbas(arvoreCPF, arvoreNome, info3);
-    
-    
-    
-    //delete(info2);
-    //delete(info3);
-    system("cls");
-    infixado(arvoreCPF);
-    cout << " ---------------------------------------------------------------------------------------------";
-    infixado(arvoreNome);
+    int op;
 
+    do{
+        system("cls");
+        cout<<"Qual sera a operacao?\n\n";
+        cout<<"\t 1- Inserir na arvore\n";
+        cout<<"\t 2- Mostra lista de funcionarios\n";
+        cout<<"\t 3- Buscar funcionario\n";
+        cout<<"\t 4- Remover funcionario\n";
+        cout<<"\t 0- Encerrar programa\n\n";
 
-    /* CONFERIR ENDEREÇOS
-    cout << info1 << endl;
-    cout << arvoreNome->info << endl;
-    cout << arvoreCPF->info  << endl;
-    cout << info2 << endl;
-    cout << arvoreNome->esq->info << endl;
-    cout << arvoreCPF->esq->info;*/
+        cout << "\tOpcao: ";
+        cin >> op;
+
+        system("cls");
+
+        Info *aux = new Info;
+        Info *busca = new Info;
+        switch(op)
+        {
+            case 1:
+                PedirInfo(aux);
+                cout << "\nFuncionario cadastrado com sucesso!\n" << endl;
+                inserirEmAmbas(arvoreNome, arvoreCPF, aux);
+                break;
+            case 2:
+                int resposta;
+
+                cout<<"\tOrdenado por: \n\t1-CPF\n\t2-Nome\n";
+                cout<<"\n\tOpcao: ";
+                cin>>resposta;
+                system("cls");
+                cout << "\t Funcionarios: \n";
+                
+                if(resposta ==1) infixado(arvoreCPF);
+                else if(resposta == 2)  infixado(arvoreNome);
+                
+                break;
+            case 3:
+                resposta=0;
+                cout<<"Busca por: \n\t1-CPF\n\t2-Nome\n";
+                cout<<"\n\tOpcao: ";cin>>resposta;
+                system("cls");
+
+                if(resposta == 1){
+                    long int cpf;
+                    cout<< "Insira o CPF a buscar: "; cin>>cpf;
+                    busca = buscarCPF(arvoreCPF, cpf);
+                }else if(resposta == 2){
+                    string nome;
+                    cout<< "Insira o nome para buscar: "; cin>>nome;
+                    busca = buscarNome(arvoreNome, nome);
+                }
+                cout << "\n\tResultado:\n\t- Nome: " << busca->Nome << "\n\t- CPF: " << busca->CPF << "\n\t- Profissao: " << busca->Profissao << endl << endl;
+                break;
+            case 0:
+                cout << "Sistema finalizando...";
+                system("pause");
+            default:
+                cout<<"Opcao invalida";
+                break;
+        }
+        system("pause");
+    }while(op !=0);
+
 
     return 0;
 }
 
-void PedirInfo(Info*& info)
-{
-    system("cls");
-    cout << "\n\tEntre com as informacoes do funcionario: ";
-    cout << "\n\tNome: ";
-    getline(cin, info->Nome);
-    system("cls");
-    cout << "\tEntre com as informacoes do funcionario:";
-    cout << "\tCPF: ";
+void PedirInfo(Info *&info){
+    string nome;
+    cout << "CADASTRO DE FUNCIONARIO" << endl;
+    cout << "\n\tDigite o nome do funcionario: ";
+    cin >> info->Nome;
+    cout << "\tDigite o CPF: ";
     cin >> info->CPF;
-    system("cls");
-    cout << "\tEntre com as informacoes do funcionario:";
-    cout << "\t Profissao:";
-    cin >> info->Profissao;
-    system("cls");
+    cout<< "\tInforme a profissao: ";
+    cin>> info->Profissao;
 }
 
 void gerarInfo(No*& raiz, Info* info)
@@ -107,12 +132,9 @@ void inserirCPF(No*& raiz, Info* info) {
         raiz->dir = NULL;
         return;
     }
-    if (raiz->info->CPF > info->CPF) {
-        inserirCPF(raiz->esq, info);
-    }
-    else {
-        inserirCPF(raiz->dir, info);
-    }
+    if (raiz->info->CPF > info->CPF) inserirCPF(raiz->esq, info);
+    
+    else  inserirCPF(raiz->dir, info);
 }
 
 void inserirNome(No*& raiz, Info* info) {
@@ -123,12 +145,9 @@ void inserirNome(No*& raiz, Info* info) {
         raiz->dir = NULL;
         return;
     }
-    if (raiz->info->Nome > info->Nome) {
-        inserirNome(raiz->esq, info);
-    }
-    else {
-        inserirNome(raiz->dir, info);
-    }
+    if (raiz->info->Nome > info->Nome) inserirNome(raiz->esq, info);
+
+    else  inserirNome(raiz->dir, info);
 }
 
 void inserirEmAmbas(No*& raiz1, No*& raiz2, Info* Info)
