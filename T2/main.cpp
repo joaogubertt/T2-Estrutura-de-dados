@@ -6,6 +6,7 @@ using namespace std;
 
 //REMOVER DA ÁRVORE
 //REMOVER TODOS OS ITENS APÓS O PROGRAMA RODAR (LIMPAR MEMÓRIA);
+//COMENTAR O CÓDIGO
 
 struct Info {
     long long int CPF;
@@ -30,12 +31,15 @@ void inserirEmAmbas(No*& raiz1, No*& raiz2, Info* Info);
 void infixado(No* raiz);
 Info* buscarNome(No* raiz, string Nome);
 Info* buscarCPF(No* raiz, long int CPF);
+bool boolNome(No* raiz, string Nome);
+bool boolCPF(No* raiz, long int CPF);
 
 int main() {
 
     int op;
 
-    do{
+    do
+    {
         system("cls");
         cout<<"Qual sera a operacao?\n\n";
         cout<<"\t 1- Inserir na arvore\n";
@@ -48,15 +52,19 @@ int main() {
         cin >> op;
 
         system("cls");
-
-        Info *aux = new Info;
+              
+        Info *aux = new Info; 
         Info *busca = new Info;
+
         switch(op)
         {
             case 1:
                 PedirInfo(aux);
-                cout << "\nFuncionario cadastrado com sucesso!\n" << endl;
-                inserirEmAmbas(arvoreNome, arvoreCPF, aux);
+                if(!boolCPF(arvoreCPF, aux->CPF) && !boolNome(arvoreNome, aux->Nome)) //Evitar redundancia
+                {
+                    inserirEmAmbas(arvoreNome, arvoreCPF, aux);
+                    cout << "\nFuncionario cadastrado com sucesso!\n" << endl;
+                } else cout << "\nNome ou CPF ja cadastrado!!\n";
                 break;
             case 2:
                 int resposta;
@@ -86,11 +94,14 @@ int main() {
                     cout<< "Insira o nome para buscar: "; cin>>nome;
                     busca = buscarNome(arvoreNome, nome);
                 }
-                cout << "\n\tResultado:\n\t- Nome: " << busca->Nome << "\n\t- CPF: " << busca->CPF << "\n\t- Profissao: " << busca->Profissao << endl << endl;
+                if(busca != NULL)
+                    cout << "\n\tResultado:\n\t- Nome: " << busca->Nome << "\n\t- CPF: " << busca->CPF << "\n\t- Profissao: " << busca->Profissao << endl << endl;
+                else cout << "\n\t Nao houve resultados...\n";
                 break;
             case 0:
                 cout << "Sistema finalizando...";
                 system("pause");
+                break;
             default:
                 cout<<"Opcao invalida";
                 break;
@@ -177,6 +188,36 @@ Info* buscarCPF(No* raiz, long int CPF) {
     }
     if (raiz->info->CPF == CPF) {
         return raiz->info;
+    }
+    else if (raiz->info->CPF > CPF) {
+        return buscarCPF(raiz->esq, CPF);
+    }
+    else {
+        return buscarCPF(raiz->dir, CPF);
+    }
+}
+
+bool boolNome(No* raiz, string Nome) {
+    if (raiz == NULL) {
+        return false;
+    }
+    if (raiz->info->Nome == Nome) { // Se achar retornará verdadeiro, tal qual na função de CPF
+        return true;
+    }
+    else if (raiz->info->Nome > Nome) {
+        return boolNome(raiz->esq, Nome);
+    }
+    else {
+        return boolNome(raiz->dir, Nome);
+    }
+}
+
+bool boolCPF(No* raiz, long int CPF) {
+    if (raiz == NULL) {
+        return false;
+    }
+    if (raiz->info->CPF == CPF) {
+        return true;
     }
     else if (raiz->info->CPF > CPF) {
         return buscarCPF(raiz->esq, CPF);
